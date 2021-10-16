@@ -103,15 +103,15 @@ class ProjectRunner:
             elif start_list1.value < start_list2.value:
                 comparisons = comparisons + 1
                 if (start_list1.skipPointer is not None) and (start_list1.skipPointer.value <= start_list2.value):
-                    while (start_list1.skipPointer is not None) and (
-                            start_list1.skipPointer.value <= start_list2.value):
-                        start_list1 = start_list1.skipPointer
+                    # while (start_list1.skipPointer is not None) and (
+                    #         start_list1.skipPointer.value <= start_list2.value):
+                    start_list1 = start_list1.skipPointer
                 else:
                     start_list1 = start_list1.next
             elif (start_list2.skipPointer is not None) and (start_list2.skipPointer.value <= start_list1.value):
                 comparisons = comparisons + 1
-                while (start_list2.skipPointer is not None) and (start_list2.skipPointer.value <= start_list1.value):
-                    start_list2 = start_list2.skipPointer
+                # while (start_list2.skipPointer is not None) and (start_list2.skipPointer.value <= start_list1.value):
+                start_list2 = start_list2.skipPointer
             else:
                 start_list2 = start_list2.next
                 comparisons = comparisons + 1
@@ -144,7 +144,6 @@ class ProjectRunner:
 
         final_list = None
         total_comparison = 0
-        comparison = 0
         list1 = None
         list2 = None
         for term in new_query_array:
@@ -158,23 +157,29 @@ class ProjectRunner:
                 comparison, final_list = self._merge_with_skip(list1, list2)
                 list1 = final_list
                 list2 = None
-            total_comparison = total_comparison + comparison
+                total_comparison = total_comparison + comparison
         final_list_with_skip = final_list.traverse_list()
         total_comparison_with_skip = total_comparison
         fina_list_with_skip_tf_idf = self._sort_list_acc_to_tf_idf(final_list)
         return final_list_without_skip, total_comparison_without_skip, final_list_with_skip, total_comparison_with_skip, final_list_without_skip_tf_idf, total_comparison_without_skip, fina_list_with_skip_tf_idf, total_comparison_with_skip
 
     def _sort_acc_to_postingsList_length(self, index, queries):
+        # length = []
+        # for term in queries:
+        #    length.append(index[term].length)
+        # length.sort()
+        # terms = []
+        # for i in range(0, len(length)):
+        #     for term in queries:
+        #         if index[term].length == length[i] and term not in terms:
+        #             terms.append(term)
+        # return terms
         length = []
-        for term in queries:
-           length.append(index[term].length)
-        length.sort()
-        terms = []
-        for i in range(0, len(length)):
-            for term in queries:
-                if index[term].length == length[i] and term not in terms:
-                    terms.append(term)
-        return terms
+        for x in queries:
+            length.append([x, index[x].length])
+        length = sorted(length, key=lambda x: x[1])
+        length = [x[0] for x in length]
+        return length
 
     def _get_postings(self, index, term):
         """ Function to get the postings list of a term from the index.
@@ -304,7 +309,7 @@ def execute_query():
     output_dict = runner.run_queries(queries, random_command)
 
     """ Dumping the results to a JSON file. """
-    with open("D:\IR\project2\data\output.json", 'w') as fp:
+    with open(output_location, 'w') as fp:
         json.dump(output_dict, fp)
 
     response = {
