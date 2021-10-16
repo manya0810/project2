@@ -29,6 +29,66 @@ class ProjectRunner:
         self.indexer = Indexer()
         self.docIdInfo = OrderedDict({})
 
+    def _merge(self, list1, list2, flag):
+        """ Implement the merge algorithm to merge 2 postings list at a time.
+            Use appropriate parameters & return types.
+            While merging 2 postings list, preserve the maximum tf-idf value of a document.
+            To be implemented."""
+        comparisons = 0
+        common_list = LinkedList()
+        start_list1 = list1.start_node
+        start_list2 = list2.start_node
+        if not flag:
+            while start_list1 is not None and start_list2 is not None:
+                if start_list1.value == start_list2.value:
+                    common_list.insert_at_end(start_list1.value)
+                    start_common = common_list.start_node
+                    while start_list1.value != start_common.value:
+                        start_common = start_common.next
+                    start_common.termFrequency = max(start_list1.termFrequency, start_list2.termFrequency)
+                    start_list1 = start_list1.next
+                    start_list2 = start_list2.next
+                    comparisons = comparisons + 1
+                elif start_list1.value > start_list2.value:
+                    start_list2 = start_list2.next
+                    comparisons = comparisons + 1
+                elif start_list1.value < start_list2.value:
+                    start_list1 = start_list1.next
+                    comparisons = comparisons + 1
+        else:
+            comparisons = 0
+            common_list = LinkedList()
+            start_list1 = list1.start_node
+            start_list2 = list2.start_node
+            while start_list1 is not None and start_list2 is not None:
+                if start_list1.value == start_list2.value:
+                    common_list.insert_at_end(start_list1.value)
+                    start_common = common_list.start_node
+                    while start_list1.value != start_common.value:
+                        start_common = start_common.next
+                    start_common.termFrequency = max(start_list1.termFrequency, start_list2.termFrequency)
+                    start_list1 = start_list1.next
+                    start_list2 = start_list2.next
+                    comparisons = comparisons + 1
+                elif start_list1.value < start_list2.value:
+                    if (start_list1.skipPointer is not None) and (start_list1.skipPointer.value <= start_list2.value):
+                        while (start_list1.skipPointer is not None) and (
+                                start_list1.skipPointer.value <= start_list2.value):
+                            start_list1 = start_list1.skipPointer
+                            comparisons = comparisons + 1
+                    else:
+                        start_list1 = start_list1.next
+                        comparisons = comparisons + 1
+                elif (start_list2.skipPointer is not None) and (start_list2.skipPointer.value <= start_list1.value):
+                    while (start_list2.skipPointer is not None) and (
+                            start_list2.skipPointer.value <= start_list1.value):
+                        start_list2 = start_list2.skipPointer
+                        comparisons = comparisons + 1
+                else:
+                    start_list2 = start_list2.next
+                    comparisons = comparisons + 1
+        return comparisons, common_list
+
     def _sort_list_acc_to_tf_idf(self, list):
         list_pointer = list.start_node
         tf_idf_sorted_value = LinkedList()
@@ -62,63 +122,6 @@ class ProjectRunner:
             list_pointer = list_pointer.next
         return tf_idf_sorted_value.traverse_list()
 
-    def _merge_without_skip(self, list1, list2):
-        comparisons = 0
-        common_list = LinkedList()
-        start_list1 = list1.start_node
-        start_list2 = list2.start_node
-        while start_list1 is not None and start_list2 is not None:
-            if start_list1.value == start_list2.value:
-                common_list.insert_at_end(start_list1.value)
-                start_common = common_list.start_node
-                while start_list1.value != start_common.value:
-                    start_common = start_common.next
-                start_common.termFrequency = max(start_list1.termFrequency, start_list2.termFrequency)
-                start_list1 = start_list1.next
-                start_list2 = start_list2.next
-                comparisons = comparisons + 1
-            elif start_list1.value > start_list2.value:
-                start_list2 = start_list2.next
-                comparisons = comparisons + 1
-            elif start_list1.value < start_list2.value:
-                start_list1 = start_list1.next
-                comparisons = comparisons + 1
-        return comparisons, common_list
-
-    def _merge_with_skip(self, list1, list2):
-        comparisons = 0
-        common_list = LinkedList()
-        start_list1 = list1.start_node
-        start_list2 = list2.start_node
-        while start_list1 is not None and start_list2 is not None:
-            if start_list1.value == start_list2.value:
-                common_list.insert_at_end(start_list1.value)
-                start_common = common_list.start_node
-                while start_list1.value != start_common.value:
-                    start_common = start_common.next
-                start_common.termFrequency = max(start_list1.termFrequency, start_list2.termFrequency)
-                start_list1 = start_list1.next
-                start_list2 = start_list2.next
-                comparisons = comparisons + 1
-            elif start_list1.value < start_list2.value:
-                if (start_list1.skipPointer is not None) and (start_list1.skipPointer.value <= start_list2.value):
-                    while (start_list1.skipPointer is not None) and (
-                            start_list1.skipPointer.value <= start_list2.value):
-                        start_list1 = start_list1.skipPointer
-                        comparisons = comparisons + 1
-                else:
-                    start_list1 = start_list1.next
-                    comparisons = comparisons + 1
-            elif (start_list2.skipPointer is not None) and (start_list2.skipPointer.value <= start_list1.value):
-                while (start_list2.skipPointer is not None) and (start_list2.skipPointer.value <= start_list1.value):
-                    start_list2 = start_list2.skipPointer
-                    comparisons = comparisons + 1
-            else:
-                start_list2 = start_list2.next
-                comparisons = comparisons + 1
-
-        return comparisons, common_list
-
     def _daat_and(self, input_arr_query, index):
         """ Implement the DAAT AND algorithm, which merges the postings list of N query terms.
             Use appropriate parameters & return types.
@@ -135,7 +138,7 @@ class ProjectRunner:
             elif list2 is None:
                 list2 = index[term]
             if list1 is not None and list2 is not None:
-                comparison, final_list = self._merge_without_skip(list1, list2)
+                comparison, final_list = self._merge(list1, list2, False)
                 list1 = final_list
                 list2 = None
             total_comparison = total_comparison + comparison
@@ -155,7 +158,7 @@ class ProjectRunner:
             elif list2 is None:
                 list2 = index[term]
             if list1 is not None and list2 is not None:
-                comparison, final_list = self._merge_with_skip(list1, list2)
+                comparison, final_list = self._merge(list1, list2, True)
                 list1 = final_list
                 list2 = None
                 total_comparison = total_comparison + comparison
@@ -165,22 +168,16 @@ class ProjectRunner:
         return final_list_without_skip, total_comparison_without_skip, final_list_with_skip, total_comparison_with_skip, final_list_without_skip_tf_idf, total_comparison_without_skip, fina_list_with_skip_tf_idf, total_comparison_with_skip
 
     def _sort_acc_to_postingsList_length(self, index, queries):
-        # length = []
-        # for term in queries:
-        #    length.append(index[term].length)
-        # length.sort()
-        # terms = []
-        # for i in range(0, len(length)):
-        #     for term in queries:
-        #         if index[term].length == length[i] and term not in terms:
-        #             terms.append(term)
-        # return terms
         length = []
-        for x in queries:
-            length.append([x, index[x].length])
-        length = sorted(length, key=lambda x: x[1])
-        length = [x[0] for x in length]
-        return length
+        for term in queries:
+           length.append(index[term].length)
+        length.sort()
+        terms = []
+        for i in range(0, len(length)):
+            for term in queries:
+                if index[term].length == length[i] and term not in terms:
+                    terms.append(term)
+        return terms
 
     def _get_postings(self, index, term):
         """ Function to get the postings list of a term from the index.
