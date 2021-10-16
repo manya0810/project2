@@ -149,13 +149,14 @@ class ProjectRunner:
         comparison = 0
         list1 = None
         list2 = None
+        new_index = self._sort_acc_to_postingsList_length(index, input_arr_query)
         for term in input_arr_query:
             if final_list is not None:
                 list1.add_skip_connections()
             if list1 is None:
-                list1 = index[term]
+                list1 = new_index[term]
             elif list2 is None:
-                list2 = index[term]
+                list2 = new_index[term]
             if list1 is not None and list2 is not None:
                 comparison, final_list = self._merge_with_skip(list1, list2)
                 list1 = final_list
@@ -165,6 +166,20 @@ class ProjectRunner:
         total_comparison_with_skip = total_comparison
         fina_list_with_skip_tf_idf = self._sort_list_acc_to_tf_idf(final_list)
         return final_list_without_skip, total_comparison_without_skip, final_list_with_skip, total_comparison_with_skip, final_list_without_skip_tf_idf, total_comparison_without_skip, fina_list_with_skip_tf_idf, total_comparison_with_skip
+
+    def _sort_acc_to_postingsList_length(self, index, queries):
+        length = []
+        for term in queries:
+           length.append(index[term])
+        length.sort()
+        new_index = OrderedDict()
+        terms = []
+        for i in range(0, len(length)):
+            for term in queries:
+                if index[term].length == length[i] and term not in terms:
+                    new_index[term] = index[term]
+                    terms.append(term)
+        return new_index
 
     def _get_postings(self, index, term):
         """ Function to get the postings list of a term from the index.
