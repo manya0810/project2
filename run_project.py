@@ -170,7 +170,7 @@ class ProjectRunner:
     def _sort_acc_to_postingsList_length(self, index, queries):
         length = []
         for term in queries:
-           length.append(index[term])
+           length.append(index[term].length)
         length.sort()
         new_index = OrderedDict()
         terms = []
