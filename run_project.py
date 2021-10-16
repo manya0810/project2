@@ -40,20 +40,18 @@ class ProjectRunner:
                 tf_idf_sorted_value.start_node = node_to_be_inserted
                 tf_idf_sorted_value.end_node = node_to_be_inserted
                 tf_idf_sorted_value.length = 1
-            elif tf_idf_sorted_value.start_node.termFrequency >= list_pointer.termFrequency:
+            elif tf_idf_sorted_value.start_node.termFrequency < list_pointer.termFrequency:
                 start_node_pointer = tf_idf_sorted_value.start_node
                 tf_idf_sorted_value.start_node = node_to_be_inserted
                 tf_idf_sorted_value.start_node.next = start_node_pointer
                 tf_idf_sorted_value.length = tf_idf_sorted_value.length + 1
-
-            elif tf_idf_sorted_value.end_node.termFrequency <= list_pointer.termFrequency:
+            elif tf_idf_sorted_value.end_node.termFrequency > list_pointer.termFrequency:
                 tf_idf_sorted_value.end_node.next = node_to_be_inserted
                 tf_idf_sorted_value.end_node = node_to_be_inserted
                 tf_idf_sorted_value.length = tf_idf_sorted_value.length + 1
-
             else:
                 tf_idf_sorted_value_start_node_pointer = tf_idf_sorted_value.start_node
-                while tf_idf_sorted_value_start_node_pointer.termFrequency < list_pointer.termFrequency < tf_idf_sorted_value.end_node.termFrequency:
+                while tf_idf_sorted_value_start_node_pointer.termFrequency >= list_pointer.termFrequency > tf_idf_sorted_value.end_node.termFrequency:
                     tf_idf_sorted_value_start_node_pointer = tf_idf_sorted_value_start_node_pointer.next
                 m = tf_idf_sorted_value.start_node
                 while m.next != tf_idf_sorted_value_start_node_pointer and m.next is not None:
@@ -62,7 +60,7 @@ class ProjectRunner:
                 node_to_be_inserted.next = tf_idf_sorted_value_start_node_pointer
                 tf_idf_sorted_value.length = tf_idf_sorted_value.length + 1
             list_pointer = list_pointer.next
-        return tf_idf_sorted_value.traverse_list()[::-1]
+        return tf_idf_sorted_value.traverse_list()
 
     def _merge_without_skip(self, list1, list2):
         comparisons = 0
