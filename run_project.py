@@ -137,6 +137,7 @@ class ProjectRunner:
             if list1 is not None and list2 is not None:
                 comparison, final_list = self._merge_without_skip(list1, list2)
                 list1 = final_list
+                list2 = None
             total_comparison = total_comparison + comparison
 
         final_list_without_skip = final_list.traverse_list()
@@ -158,6 +159,7 @@ class ProjectRunner:
             if list1 is not None and list2 is not None:
                 comparison, final_list = self._merge_with_skip(list1, list2)
                 list1 = final_list
+                list2 = None
             total_comparison = total_comparison + comparison
         final_list_with_skip = final_list.traverse_list()
         total_comparison_with_skip = total_comparison
