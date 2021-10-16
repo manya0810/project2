@@ -101,17 +101,18 @@ class ProjectRunner:
                 start_list2 = start_list2.next
                 comparisons = comparisons + 1
             elif start_list1.value < start_list2.value:
-                comparisons = comparisons + 1
                 if (start_list1.skipPointer is not None) and (start_list1.skipPointer.value <= start_list2.value):
-                    # while (start_list1.skipPointer is not None) and (
-                    #         start_list1.skipPointer.value <= start_list2.value):
-                    start_list1 = start_list1.skipPointer
+                    while (start_list1.skipPointer is not None) and (
+                            start_list1.skipPointer.value <= start_list2.value):
+                        start_list1 = start_list1.skipPointer
+                        comparisons = comparisons + 1
                 else:
                     start_list1 = start_list1.next
+                    comparisons = comparisons + 1
             elif (start_list2.skipPointer is not None) and (start_list2.skipPointer.value <= start_list1.value):
-                comparisons = comparisons + 1
-                # while (start_list2.skipPointer is not None) and (start_list2.skipPointer.value <= start_list1.value):
-                start_list2 = start_list2.skipPointer
+                while (start_list2.skipPointer is not None) and (start_list2.skipPointer.value <= start_list1.value):
+                    start_list2 = start_list2.skipPointer
+                    comparisons = comparisons + 1
             else:
                 start_list2 = start_list2.next
                 comparisons = comparisons + 1
