@@ -127,7 +127,8 @@ class ProjectRunner:
         final_list = None
         comparison = 0
         total_comparison = 0
-        for term in input_arr_query:
+        new_query_array = self._sort_acc_to_postingsList_length(index, input_arr_query)
+        for term in new_query_array:
             if list1 is None:
                 list1 = index[term]
             elif list2 is None:
@@ -137,7 +138,6 @@ class ProjectRunner:
                 list1 = final_list
                 list2 = None
             total_comparison = total_comparison + comparison
-
         final_list_without_skip = final_list.traverse_list()
         total_comparison_without_skip = total_comparison
         final_list_without_skip_tf_idf = self._sort_list_acc_to_tf_idf(final_list)
@@ -147,7 +147,6 @@ class ProjectRunner:
         comparison = 0
         list1 = None
         list2 = None
-        new_query_array = self._sort_acc_to_postingsList_length(index, input_arr_query)
         for term in new_query_array:
             if final_list is not None:
                 list1.add_skip_connections()
